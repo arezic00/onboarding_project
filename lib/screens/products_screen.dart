@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:onboarding_project/cubits/products_cubit.dart';
+import 'package:onboarding_project/widgets/product_card.dart';
+
+class ProductsScreen extends StatelessWidget {
+  const ProductsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final productsCubit = context.read<ProductsCubit>();
+    if (productsCubit.state is ProductsInitial) productsCubit.getProducts();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Products'),
+      ),
+      body: BlocConsumer<ProductsCubit, ProductsState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          if (state is ProductsLoaded) {
+            return ListView.builder(
+              itemBuilder: (context, index) => ProductCard(
+                title: state.products[index].title,
+                price: '${state.products[index].price}\$',
+              ),
+              itemCount: state.products.length,
+            );
+          } else if (state is ProductsError) {
+            return const Center(
+              child: Text('Couldn\'t load products'),
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+}
