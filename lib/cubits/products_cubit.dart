@@ -22,11 +22,11 @@ class ProductsCubit extends Cubit<ProductsState> {
   final ProductService _productService = ProductService();
   ProductsCubit() : super(ProductsInitial());
 
-  Future<void> getProducts() async {
+  Future<void> getProducts(String accessToken) async {
     emit(ProductsLoading());
 
     try {
-      final products = await _productService.getProducts();
+      final products = await _productService.getProducts(accessToken);
       emit(ProductsLoaded(products: products));
     } catch (e) {
       emit(ProductsError('$e'));

@@ -1,20 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import '../models/auth_data.dart';
+import '../utils/constants.dart';
 
 class SecureStorageService {
   final _storage = const FlutterSecureStorage();
 
-  static const String accessTokenKey = 'accessToken';
-  static const String refreshTokenKey = 'refreshToken';
+  Future<void> saveAuthData(AuthData authData) async => await _storage.write(
+      key: StorageKeys.authDataKey, value: jsonEncode(authData));
 
-  Future<void> saveAccessToken(String token) async =>
-      await _storage.write(key: accessTokenKey, value: token);
-
-  Future<String?> getAccessToken() async =>
-      await _storage.read(key: accessTokenKey);
-
-  Future<void> saveRefreshToken(String token) async =>
-      await _storage.write(key: refreshTokenKey, value: token);
-
-  Future<String?> getRefreshToken() async =>
-      await _storage.read(key: refreshTokenKey);
+  Future<AuthData?> getAuthData() async {
+    final authData = await _storage.read(key: StorageKeys.authDataKey);
+    if (authData != null) return AuthData.fromJson(jsonDecode(authData));
+    return null;
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/cubits/products_cubit.dart';
 import 'package:onboarding_project/widgets/product_card.dart';
 
@@ -9,7 +10,12 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsCubit = context.read<ProductsCubit>();
-    if (productsCubit.state is ProductsInitial) productsCubit.getProducts();
+    final authState = context.read<AuthCubit>().state;
+    if (productsCubit.state is ProductsInitial &&
+        authState is AuthAuthenticated) {
+      productsCubit.getProducts(authState.authData.accessToken);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Products'),

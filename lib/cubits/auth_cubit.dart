@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:onboarding_project/models/user.dart';
 import 'package:onboarding_project/services/auth_service.dart';
+import 'package:onboarding_project/services/secure_storage_service.dart';
+
+import '../models/auth_data.dart';
 
 abstract class AuthState {}
 
@@ -9,8 +11,8 @@ class AuthInitial extends AuthState {}
 class AuthLoading extends AuthState {}
 
 class AuthAuthenticated extends AuthState {
-  final String token;
-  AuthAuthenticated(this.token);
+  final AuthData authData;
+  AuthAuthenticated(this.authData);
 }
 
 class AuthError extends AuthState {
@@ -20,6 +22,7 @@ class AuthError extends AuthState {
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthService _authService = AuthService();
+  final SecureStorageService _storageService = SecureStorageService();
 
   AuthCubit() : super(AuthInitial());
 
@@ -27,10 +30,10 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
 
     try {
-      final userData = await _authService.loginUser(username, password);
+      final authData = await _authService.loginUser(username, password);
+      _storageService.saveAuthData(authData);
 
-      final user = User.fromJson(userData);
-      emit(AuthAuthenticated(user.accessToken));
+      emit(AuthAuthenticated(authData));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -40,8 +43,12 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
 
     try {
-      final token = await _authService.authCurrentUser();
-      emit(AuthAuthenticated(token));
+      final storedAuthData = await _storageService.getAuthData();
+      if (storedAuthData == null) throw Exception('Missing stored auth data.');
+      final authenticatedAuthData =
+          await _authService.authCurrentUser(storedAuthData);
+      _storageService.saveAuthData(authenticatedAuthData);
+      emit(AuthAuthenticated(authenticatedAuthData));
     } catch (e) {
       emit(AuthInitial());
     }

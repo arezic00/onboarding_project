@@ -29,9 +29,6 @@ final router = GoRouter(
     final authState = context.read<AuthCubit>().state;
     final bool isAuthenticated = authState is AuthAuthenticated;
 
-    print(state.uri.toString());
-    print(isAuthenticated);
-
     if (state.uri.toString() == '/login' && isAuthenticated) {
       return '/products';
     }
@@ -39,5 +36,7 @@ final router = GoRouter(
     if (state.uri.toString() != '/login' && !isAuthenticated) {
       return '/login';
     }
+
+    return state.fullPath;
   },
 );
