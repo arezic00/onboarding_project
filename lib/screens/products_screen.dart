@@ -16,30 +16,25 @@ class ProductsScreen extends StatelessWidget {
       productsCubit.getProducts(authState.authData.accessToken);
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Products'),
-      ),
-      body: BlocConsumer<ProductsCubit, ProductsState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          if (state is ProductsLoaded) {
-            return ListView.builder(
-              itemBuilder: (context, index) => ProductCard(
-                title: state.products[index].title,
-                price: '${state.products[index].price}\$',
-              ),
-              itemCount: state.products.length,
-            );
-          } else if (state is ProductsError) {
-            return const Center(
-              child: Text('Couldn\'t load products'),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+    return BlocConsumer<ProductsCubit, ProductsState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        if (state is ProductsLoaded) {
+          return ListView.builder(
+            itemBuilder: (context, index) => ProductCard(
+              title: state.products[index].title,
+              price: '${state.products[index].price}\$',
+            ),
+            itemCount: state.products.length,
+          );
+        } else if (state is ProductsError) {
+          return const Center(
+            child: Text('Couldn\'t load products'),
+          );
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

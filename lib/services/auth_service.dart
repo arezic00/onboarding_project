@@ -49,7 +49,6 @@ class AuthService {
     }
   }
 
-  //TODO: implement token check
   bool expired(String jwtToken) {
     final jwtJsonMap = decodeJwtPayload(jwtToken);
     final exp = jwtJsonMap['exp'];
