@@ -16,4 +16,7 @@ class SecureStorageService {
     if (authData != null) return AuthData.fromJson(jsonDecode(authData));
     return null;
   }
+
+  Future<void> deleteAuthData() async =>
+      await _storage.delete(key: StorageKeys.authDataKey);
 }

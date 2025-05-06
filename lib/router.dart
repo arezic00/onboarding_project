@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/cubits/products_cubit.dart';
 import 'package:onboarding_project/screens/products_screen.dart';
+import 'package:onboarding_project/services/dio_client.dart';
 import 'screens/home_screen.dart';
 import 'screens/log_screen.dart';
 import 'screens/login_screen.dart';

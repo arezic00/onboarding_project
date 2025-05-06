@@ -1,10 +1,9 @@
 // API URLs
 class ApiConstants {
   static const String baseUrl = 'https://dummyjson.com';
-  static const String loginUrl = '$baseUrl/auth/login';
+
   static const String refreshAuth = '$baseUrl/auth/refresh';
   static const String currentAuthUrl = '$baseUrl/auth/me';
-  static const String productsUrl = '$baseUrl/auth/products';
   static const String logsUrl =
       'https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json';
 }
@@ -19,7 +18,7 @@ class StorageKeys {
 // Configuration Values
 class ConfigConstants {
   static const int tokenExpiryOffset = 30;
-  static const int tokenExpiryMinutes = 10;
+  static const int tokenExpiryMinutes = 1;
   static const int productsPageSize = 15;
   static const Duration searchDebounceTime = Duration(milliseconds: 500);
 }

@@ -50,11 +50,44 @@ class AuthCubit extends Cubit<AuthState> {
       _storageService.saveAuthData(authenticatedAuthData);
       emit(AuthAuthenticated(authenticatedAuthData));
     } catch (e) {
-      emit(AuthInitial());
+      logout();
     }
   }
 
-  void logout() {
+  Future<bool>? _refreshTokenFuture;
+
+  Future<bool> _refreshToken(String refreshToken) async {
+    try {
+      final result = await _authService.refreshAuth(refreshToken);
+      emit(AuthAuthenticated(result));
+      _storageService.saveAuthData(result);
+      return true;
+    } catch (e) {
+      print('refreshToken failed in AuthCubit: $e');
+      logout();
+      return false;
+    }
+  }
+
+  Future<bool> tryRefreshToken(String token) async {
+    print('tryRefreshToken()...');
+    print('Refresh token: $token');
+    print('_refreshTokenFuture: $_refreshTokenFuture');
+    _refreshTokenFuture ??= _refreshToken(token);
+    final result = await _refreshTokenFuture;
+    _refreshTokenFuture = null;
+    return result ?? false;
+  }
+
+  AuthData? get authData {
+    if (state is AuthAuthenticated) {
+      return (state as AuthAuthenticated).authData;
+    }
+    return null;
+  }
+
+  void logout() async {
+    await _storageService.deleteAuthData;
     emit(AuthInitial());
   }
 }

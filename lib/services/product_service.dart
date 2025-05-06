@@ -1,25 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:onboarding_project/models/product.dart';
-
-import '../utils/constants.dart';
+import 'package:onboarding_project/service_locator.dart';
+import 'package:onboarding_project/services/dio_client.dart';
 
 class ProductService {
-  final Dio _dio = Dio();
+  final DioClient _dioClient = getIt();
 
   //TODO: add limit and skip parameters for pagination, select
   Future<List<Product>> getProducts(String accessToken) async {
     try {
-      final response = await _dio.get(
-        ApiConstants.productsUrl,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $accessToken',
-            'Content-Type': 'application/json'
-          },
-        ),
-      );
-
-      //TODO: switch case for status codes 401 Unauthorized (token expired) and 403 Forbidden (invalid token)
+      final response = await _dioClient.dioRequest(path: '/auth/products');
 
       if (response.statusCode == 200) {
         return (response.data['products'] as List<dynamic>)
@@ -29,7 +18,8 @@ class ProductService {
         throw Exception('Failed to fetch products: ${response.statusMessage}');
       }
     } catch (e) {
-      throw Exception(e);
+      print('Error in getProducts: $e');
+      rethrow;
     }
   }
 }
