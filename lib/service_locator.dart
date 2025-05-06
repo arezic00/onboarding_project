@@ -12,5 +12,6 @@ void setup() {
       getAuthCubitFunc: () => getIt<AuthCubit>(),
     ),
   );
-  getIt.registerLazySingleton(() => Logger());
+  getIt.registerLazySingleton(
+      () => Logger(printer: PrettyPrinter(noBoxingByDefault: true)));
 }

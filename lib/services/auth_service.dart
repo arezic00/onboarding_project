@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:onboarding_project/models/auth_data.dart';
 import 'package:onboarding_project/service_locator.dart';
 import 'package:onboarding_project/services/dio_client.dart';
@@ -5,6 +6,7 @@ import 'package:onboarding_project/utils/constants.dart';
 
 class AuthService {
   final DioClient _dioClient = getIt();
+  final Logger logger = getIt();
 
   Future<AuthData> loginUser(String username, String password) async {
     try {
@@ -22,7 +24,7 @@ class AuthService {
       if (response.statusCode == 200) {
         final authData = AuthData(
           accessToken: response.data[StorageKeys.accessToken],
-          refreshToken: response.data[StorageKeys.accessToken],
+          refreshToken: response.data[StorageKeys.refreshToken],
         );
 
         return authData;
@@ -58,7 +60,7 @@ class AuthService {
         },
       );
       if (response.statusCode == 200) {
-        return AuthData.fromJson(response.data);
+        return AuthData.fromMap(response.data);
       } else {
         throw Exception('Failed to refresh auth session');
       }

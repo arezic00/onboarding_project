@@ -65,9 +65,10 @@ class DioClient {
       response =
           await dio.request(path, data: data, options: Options(method: method));
     } catch (e) {
-      logger.d('dioRequest error: $e');
+      logger.e('dioRequest error: $e');
       rethrow;
     }
+    logger.d('Response data: ${response.data}');
     return response;
   }
 }

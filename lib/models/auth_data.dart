@@ -11,17 +11,21 @@ class AuthData {
     required this.refreshToken,
   });
 
-  factory AuthData.fromJson(Map<String, dynamic> json) {
+  factory AuthData.fromMap(Map<String, dynamic> map) {
     return AuthData(
-      accessToken: json[StorageKeys.accessToken],
-      refreshToken: json[StorageKeys.refreshToken],
+      accessToken: map[StorageKeys.accessToken],
+      refreshToken: map[StorageKeys.refreshToken],
     );
   }
 
-  Map<String, dynamic> toJson() => {
+  factory AuthData.fromJson(String json) => AuthData.fromMap(jsonDecode(json));
+
+  Map<String, dynamic> toMap() => {
         StorageKeys.accessToken: accessToken,
         StorageKeys.refreshToken: refreshToken,
       };
+
+  String toJson() => jsonEncode(toMap());
 
   String get authHeader => 'Bearer $accessToken';
 

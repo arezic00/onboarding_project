@@ -34,6 +34,8 @@ class AuthCubit extends Cubit<AuthState> {
 
     try {
       final authData = await _authService.loginUser(username, password);
+      logger.d('AuthData.refreshToken: ${authData.refreshToken}');
+      logger.d('AuthData to json: ${authData.toJson()}');
       _storageService.saveAuthData(authData);
 
       emit(AuthAuthenticated(authData));
@@ -44,11 +46,15 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> authCurrentUser() async {
+    logger.d('authCurrentUser()');
     emit(AuthLoading());
 
     try {
       final storedAuthData = await _storageService.getAuthData();
+      logger.d('StoredAuthData: $storedAuthData');
       if (storedAuthData == null) throw Exception('Missing stored auth data.');
+      logger.d('Stored refresh token: ${storedAuthData.refreshToken}');
+      logger.d('Stored access token: ${storedAuthData.accessToken}');
       final authenticatedAuthData =
           await _authService.authCurrentUser(storedAuthData);
       _storageService.saveAuthData(authenticatedAuthData);
