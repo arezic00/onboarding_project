@@ -20,10 +20,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        return authCubit;
-      },
+    return BlocProvider.value(
+      value: authCubit,
       child: MaterialApp.router(
         routerConfig: router,
       ),
