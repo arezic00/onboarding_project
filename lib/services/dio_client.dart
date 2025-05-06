@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/utils/constants.dart';
 
 import '../models/auth_data.dart';
+import '../service_locator.dart';
 
 class DioClient {
   final AuthCubit Function() _getAuthCubitFunc;
+  final Logger logger = getIt();
 
   DioClient({required AuthCubit Function() getAuthCubitFunc})
       : _getAuthCubitFunc = getAuthCubitFunc;
@@ -29,9 +32,9 @@ class DioClient {
       onRequest: (options, handler) async {
         if (useAuthHeader) {
           if (_authData?.isExpired ?? false) {
-            print('Token expired (onRequest), refreshing...');
+            logger.d('Token expired (onRequest), refreshing...');
             final isSuccess = await _authCubit.tryRefreshToken(_refreshToken);
-            print('Is token refresh sucess: $isSuccess');
+            logger.d('Is token refresh sucess: $isSuccess');
           }
           final headersToInclude = {
             HttpHeaders.authorizationHeader: _authHeader,
@@ -42,7 +45,8 @@ class DioClient {
       },
       onError: (error, handler) {
         //TODO: check if token is expired in the response (code 401 or 403) otherwise sign out the user
-        print('Request onError: $error');
+        logger.d('Request onError: $error');
+        handler.next(error);
       },
     ));
 
@@ -61,7 +65,7 @@ class DioClient {
       response =
           await dio.request(path, data: data, options: Options(method: method));
     } catch (e) {
-      print('dioRequest error: $e');
+      logger.d('dioRequest error: $e');
       rethrow;
     }
     return response;

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/services/dio_client.dart';
 
@@ -11,4 +12,5 @@ void setup() {
       getAuthCubitFunc: () => getIt<AuthCubit>(),
     ),
   );
+  getIt.registerLazySingleton(() => Logger());
 }

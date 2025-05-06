@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
+import 'package:onboarding_project/service_locator.dart';
 import 'package:onboarding_project/services/auth_service.dart';
 import 'package:onboarding_project/services/secure_storage_service.dart';
 
@@ -23,6 +25,7 @@ class AuthError extends AuthState {
 class AuthCubit extends Cubit<AuthState> {
   final AuthService _authService = AuthService();
   final SecureStorageService _storageService = SecureStorageService();
+  final Logger logger = getIt();
 
   AuthCubit() : super(AuthInitial());
 
@@ -35,6 +38,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       emit(AuthAuthenticated(authData));
     } catch (e) {
+      logger.e('Error in AuthCubit.login()', error: e);
       emit(AuthError(e.toString()));
     }
   }
@@ -63,16 +67,16 @@ class AuthCubit extends Cubit<AuthState> {
       _storageService.saveAuthData(result);
       return true;
     } catch (e) {
-      print('refreshToken failed in AuthCubit: $e');
+      logger.d('refreshToken failed in AuthCubit: $e');
       logout();
       return false;
     }
   }
 
   Future<bool> tryRefreshToken(String token) async {
-    print('tryRefreshToken()...');
-    print('Refresh token: $token');
-    print('_refreshTokenFuture: $_refreshTokenFuture');
+    logger.d('tryRefreshToken()...');
+    logger.d('Refresh token: $token');
+    logger.d('_refreshTokenFuture: $_refreshTokenFuture');
     _refreshTokenFuture ??= _refreshToken(token);
     final result = await _refreshTokenFuture;
     _refreshTokenFuture = null;
@@ -87,7 +91,7 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void logout() async {
-    await _storageService.deleteAuthData;
+    await _storageService.deleteAuthData();
     emit(AuthInitial());
   }
 }

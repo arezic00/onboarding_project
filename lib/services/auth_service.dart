@@ -11,6 +11,7 @@ class AuthService {
       final response = await _dioClient.dioRequest(
         path: '/auth/login',
         method: 'POST',
+        useAuthHeader: false,
         data: {
           'username': username,
           'password': password,
