@@ -4,10 +4,9 @@ class User {
   final String email;
   final String firstName;
   final String lastName;
-  final String gender;
+  final int age;
+  final String address;
   final String image;
-  final String accessToken;
-  final String refreshToken;
 
   User({
     required this.id,
@@ -15,23 +14,21 @@ class User {
     required this.email,
     required this.firstName,
     required this.lastName,
-    required this.gender,
+    required this.age,
+    required this.address,
     required this.image,
-    required this.accessToken,
-    required this.refreshToken,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      id: json['id'],
-      username: json['username'],
-      email: json['email'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      gender: json['gender'],
-      image: json['image'],
-      accessToken: json['accessToken'],
-      refreshToken: json['refreshToken'],
+      id: map['id'],
+      username: map['username'],
+      email: map['email'],
+      firstName: map['firstName'],
+      lastName: map['lastname'],
+      age: map['age'],
+      address: map['address']['address'],
+      image: map['image'],
     );
   }
 }

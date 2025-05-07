@@ -18,7 +18,7 @@ class StorageKeys {
 // Configuration Values
 class ConfigConstants {
   static const int tokenExpiryOffset = 30;
-  static const int tokenExpiryMinutes = 1;
+  static const int tokenExpiryMinutes = 10;
   static const int productsPageSize = 15;
   static const Duration searchDebounceTime = Duration(milliseconds: 500);
 }

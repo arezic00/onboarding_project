@@ -92,7 +92,7 @@ class AuthCubit extends Cubit<AuthState> {
     return null;
   }
 
-  void logout() async {
+  Future<void> logout() async {
     await _storageService.deleteAuthData();
     emit(AuthInitial());
   }
