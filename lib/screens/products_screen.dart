@@ -20,12 +20,24 @@ class ProductsScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state) {
         if (state is ProductsLoaded) {
-          return ListView.builder(
-            itemBuilder: (context, index) => ProductCard(
-              title: state.products[index].title,
-              price: '${state.products[index].price}\$',
+          return NotificationListener<ScrollEndNotification>(
+            onNotification: (scrollEndNotification) {
+              if (scrollEndNotification.metrics.extentAfter == 0) {
+                productsCubit.getMoreProducts(
+                    (authState as AuthAuthenticated).authData.accessToken);
+              }
+              return true;
+            },
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) => (index == state.products.length)
+                  ? const Center(child: CircularProgressIndicator())
+                  : ProductCard(
+                      title: state.products[index].title,
+                      price: '${state.products[index].price}\$',
+                    ),
+              itemCount: state.products.length + 1,
             ),
-            itemCount: state.products.length,
           );
         } else if (state is ProductsError) {
           return const Center(
