@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:onboarding_project/models/product.dart';
+import 'package:onboarding_project/models/products_response.dart';
 import 'package:onboarding_project/services/product_service.dart';
 
 abstract class ProductsState {}
@@ -10,7 +11,14 @@ class ProductsLoading extends ProductsState {}
 
 class ProductsLoaded extends ProductsState {
   final List<Product> products;
-  ProductsLoaded({required this.products});
+  final int total;
+  ProductsLoaded({required this.products, required this.total});
+
+  bool get hasReachedEnd => products.length >= total;
+
+  factory ProductsLoaded.fromResponse(ProductsResponse productResponse) =>
+      ProductsLoaded(
+          products: productResponse.products, total: productResponse.total);
 }
 
 class ProductsError extends ProductsState {
@@ -26,9 +34,9 @@ class ProductsCubit extends Cubit<ProductsState> {
     emit(ProductsLoading());
 
     try {
-      final products =
+      final productsResponse =
           await _productService.getProducts(accessToken: accessToken, skip: 0);
-      emit(ProductsLoaded(products: products));
+      emit(ProductsLoaded.fromResponse(productsResponse));
     } catch (e) {
       emit(ProductsError('$e'));
     }
@@ -37,10 +45,13 @@ class ProductsCubit extends Cubit<ProductsState> {
   Future<void> getMoreProducts(String accessToken) async {
     if (state is ProductsLoaded) {
       try {
-        final products = (state as ProductsLoaded).products;
-        final newProducts = await _productService.getProducts(
+        final loadedState = state as ProductsLoaded;
+        final products = loadedState.products;
+        final newProductsResponse = await _productService.getProducts(
             accessToken: accessToken, skip: products.length);
-        emit(ProductsLoaded(products: [...products, ...newProducts]));
+        emit(ProductsLoaded(
+            products: [...products, ...newProductsResponse.products],
+            total: newProductsResponse.total));
       } catch (e) {
         emit(ProductsError('$e'));
       }

@@ -22,7 +22,8 @@ class ProductsScreen extends StatelessWidget {
         if (state is ProductsLoaded) {
           return NotificationListener<ScrollEndNotification>(
             onNotification: (scrollEndNotification) {
-              if (scrollEndNotification.metrics.extentAfter == 0) {
+              if (scrollEndNotification.metrics.extentAfter == 0 &&
+                  !state.hasReachedEnd) {
                 productsCubit.getMoreProducts(
                     (authState as AuthAuthenticated).authData.accessToken);
               }
@@ -31,7 +32,10 @@ class ProductsScreen extends StatelessWidget {
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) => (index == state.products.length)
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child: state.hasReachedEnd
+                          ? const Text('No more products.')
+                          : const CircularProgressIndicator())
                   : ProductCard(
                       title: state.products[index].title,
                       price: '${state.products[index].price}\$',
