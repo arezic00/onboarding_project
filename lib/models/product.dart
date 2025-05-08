@@ -5,9 +5,9 @@ class Product {
 
   Product({required this.id, required this.title, required this.price});
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json['id'],
-        title: json['title'],
-        price: json['price'],
+  factory Product.fromMap(Map<String, dynamic> map) => Product(
+        id: map['id'],
+        title: map['title'],
+        price: map['price'],
       );
 }

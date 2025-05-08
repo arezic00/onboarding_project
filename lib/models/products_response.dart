@@ -12,7 +12,7 @@ class ProductsResponse {
   factory ProductsResponse.fromMap(Map<String, dynamic> map) {
     return ProductsResponse(
       products: (map['products'] as List<dynamic>)
-          .map((jsonProduct) => Product.fromJson(jsonProduct))
+          .map((productMap) => Product.fromMap(productMap))
           .toList(),
       total: map['total'] as int,
     );
