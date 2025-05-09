@@ -4,53 +4,115 @@ import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/cubits/products_cubit.dart';
 import 'package:onboarding_project/widgets/product_card.dart';
 
-class ProductsScreen extends StatelessWidget {
+class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<ProductsScreen> createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  final _searchController = TextEditingController();
+  String get query => _searchController.text.trim();
+
+  @override
+  void initState() {
+    super.initState();
+
     final productsCubit = context.read<ProductsCubit>();
     final authState = context.read<AuthCubit>().state;
     if (productsCubit.state is ProductsInitial &&
         authState is AuthAuthenticated) {
-      productsCubit.getProducts(authState.authData.accessToken);
+      productsCubit.getProducts(accessToken: authState.authData.accessToken);
     }
 
-    return BlocConsumer<ProductsCubit, ProductsState>(
-      listener: (context, state) {},
-      builder: (context, state) {
-        if (state is ProductsLoaded) {
-          return NotificationListener<ScrollEndNotification>(
-            onNotification: (scrollEndNotification) {
-              if (scrollEndNotification.metrics.extentAfter == 0 &&
-                  !state.hasReachedEnd) {
-                productsCubit.getMoreProducts(
-                    (authState as AuthAuthenticated).authData.accessToken);
-              }
-              return true;
-            },
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemBuilder: (context, index) => (index == state.products.length)
-                  ? Center(
-                      child: state.hasReachedEnd
-                          ? const Text('No more products.')
-                          : const CircularProgressIndicator())
-                  : ProductCard(
-                      title: state.products[index].title,
-                      price: '${state.products[index].price}\$',
-                    ),
-              itemCount: state.products.length + 1,
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  String _lastQuery = '';
+
+  void _onSearchChanged() {
+    final currentQuery = query;
+    if (currentQuery != _lastQuery) {
+      _lastQuery = currentQuery;
+
+      final authState = context.read<AuthCubit>().state;
+      if (authState is AuthAuthenticated) {
+        context.read<ProductsCubit>().getProducts(
+            accessToken: authState.authData.accessToken, search: currentQuery);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide.none),
+              filled: true,
             ),
-          );
-        } else if (state is ProductsError) {
-          return const Center(
-            child: Text('Couldn\'t load products'),
-          );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
+          ),
+        ),
+        Expanded(
+          child: BlocConsumer<ProductsCubit, ProductsState>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              if (state is ProductsLoaded) {
+                return NotificationListener<ScrollEndNotification>(
+                  onNotification: (scrollEndNotification) {
+                    if (scrollEndNotification.metrics.extentAfter == 0 &&
+                        !state.hasReachedEnd) {
+                      context.read<ProductsCubit>().getMoreProducts(
+                          accessToken: (context.read<AuthCubit>().state
+                                  as AuthAuthenticated)
+                              .authData
+                              .accessToken,
+                          search: query);
+                    }
+                    return true;
+                  },
+                  child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemBuilder: (context, index) =>
+                        (index == state.products.length)
+                            ? Center(
+                                child: state.hasReachedEnd
+                                    ? const Text('No more products.')
+                                    : const CircularProgressIndicator())
+                            : ProductCard(
+                                title: state.products[index].title,
+                                price: '${state.products[index].price}\$',
+                              ),
+                    itemCount: state.products.length + 1,
+                  ),
+                );
+              } else if (state is ProductsError) {
+                return const Center(
+                  child: Text('Couldn\'t load products'),
+                );
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 }

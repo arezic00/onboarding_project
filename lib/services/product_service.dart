@@ -11,11 +11,12 @@ class ProductService {
   Future<ProductsResponse> getProducts({
     required String accessToken,
     required int skip,
+    String search = '',
   }) async {
     try {
       final response = await _dioClient.dioRequest(
           path:
-              '/auth/products?limit=${ConfigConstants.productsPageSize}&skip=$skip&select=title,price');
+              '/auth/products/search?q=$search&limit=${ConfigConstants.productsPageSize}&skip=$skip&select=title,price');
 
       if (response.statusCode == 200) {
         return ProductsResponse.fromMap(response.data);
