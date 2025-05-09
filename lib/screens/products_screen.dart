@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/cubits/products_cubit.dart';
+import 'package:onboarding_project/utils/debouncer.dart';
 import 'package:onboarding_project/widgets/product_card.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class ProductsScreen extends StatefulWidget {
 
 class _ProductsScreenState extends State<ProductsScreen> {
   final _searchController = TextEditingController();
+  final _debouncer = Debouncer(milliseconds: 500);
   String get query => _searchController.text.trim();
 
   @override
@@ -38,8 +40,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       final authState = context.read<AuthCubit>().state;
       if (authState is AuthAuthenticated) {
-        context.read<ProductsCubit>().getProducts(
-            accessToken: authState.authData.accessToken, search: currentQuery);
+        _debouncer.run(() => context.read<ProductsCubit>().getProducts(
+            accessToken: authState.authData.accessToken, search: currentQuery));
       }
     }
   }
@@ -48,6 +50,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _debouncer.dispose();
     super.dispose();
   }
 
