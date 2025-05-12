@@ -9,7 +9,6 @@ class ProductService {
   final Logger logger = getIt();
 
   Future<ProductsResponse> getProducts({
-    required String accessToken,
     required int skip,
     String search = '',
   }) async {

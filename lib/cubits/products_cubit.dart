@@ -30,27 +30,25 @@ class ProductsCubit extends BaseCubit<ProductsState> {
   final ProductService _productService = ProductService();
   ProductsCubit() : super(ProductsInitial());
 
-  Future<void> getProducts(
-      {required String accessToken, String search = ''}) async {
+  Future<void> getProducts({String search = ''}) async {
     emit(ProductsLoading());
 
     try {
-      final productsResponse = await _productService.getProducts(
-          accessToken: accessToken, skip: 0, search: search);
+      final productsResponse =
+          await _productService.getProducts(skip: 0, search: search);
       safeEmit(ProductsLoaded.fromResponse(productsResponse));
     } catch (e) {
       safeEmit(ProductsError('$e'));
     }
   }
 
-  Future<void> getMoreProducts(
-      {required String accessToken, String search = ''}) async {
+  Future<void> getMoreProducts({String search = ''}) async {
     if (state is ProductsLoaded) {
       try {
         final loadedState = state as ProductsLoaded;
         final products = loadedState.products;
         final newProductsResponse = await _productService.getProducts(
-            accessToken: accessToken, skip: products.length, search: search);
+            skip: products.length, search: search);
         safeEmit(ProductsLoaded(
             products: [...products, ...newProductsResponse.products],
             total: newProductsResponse.total));

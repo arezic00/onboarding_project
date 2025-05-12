@@ -23,7 +23,7 @@ class User {
       username: map['username'],
       email: map['email'],
       firstName: map['firstName'],
-      lastName: map['lastname'],
+      lastName: map['lastName'],
       age: map['age'],
       image: map['image'],
     );

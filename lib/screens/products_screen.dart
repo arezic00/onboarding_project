@@ -25,7 +25,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final authState = context.read<AuthCubit>().state;
     if (productsCubit.state is ProductsInitial &&
         authState is AuthAuthenticated) {
-      productsCubit.getProducts(accessToken: authState.authData.accessToken);
+      productsCubit.getProducts();
     }
 
     _searchController.addListener(_onSearchChanged);
@@ -40,8 +40,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       final authState = context.read<AuthCubit>().state;
       if (authState is AuthAuthenticated) {
-        _debouncer.run(() => context.read<ProductsCubit>().getProducts(
-            accessToken: authState.authData.accessToken, search: currentQuery));
+        _debouncer.run(() =>
+            context.read<ProductsCubit>().getProducts(search: currentQuery));
       }
     }
   }
@@ -81,12 +81,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   onNotification: (scrollEndNotification) {
                     if (scrollEndNotification.metrics.extentAfter == 0 &&
                         !state.hasReachedEnd) {
-                      context.read<ProductsCubit>().getMoreProducts(
-                          accessToken: (context.read<AuthCubit>().state
-                                  as AuthAuthenticated)
-                              .authData
-                              .accessToken,
-                          search: query);
+                      context
+                          .read<ProductsCubit>()
+                          .getMoreProducts(search: query);
                     }
                     return true;
                   },

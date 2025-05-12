@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:onboarding_project/cubits/user_info_cubit.dart';
 
 import '../cubits/auth_cubit.dart';
-import '../models/user.dart';
 
 class UserInfoScreen extends StatelessWidget {
-  final User user;
-
-  const UserInfoScreen({super.key, required this.user});
+  const UserInfoScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,54 +20,72 @@ class UserInfoScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Large user avatar
-            Hero(
-              tag: 'user-avatar',
-              child: CircleAvatar(
-                radius: 60,
-                backgroundColor: Colors.grey.shade200,
-                backgroundImage: NetworkImage(user.image),
-                child: Text(
-                  user.firstName[0].toUpperCase(),
-                  style: const TextStyle(fontSize: 40),
-                ),
+            Expanded(
+              child: BlocBuilder<UserInfoCubit, UserInfoState>(
+                builder: (context, state) {
+                  if (state is UserInfoLoaded) {
+                    final user = state.user;
+                    return Column(
+                      children: [
+                        Hero(
+                          tag: 'user-avatar',
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.grey.shade200,
+                            backgroundImage: NetworkImage(user.image),
+                            child: Text(
+                              user.firstName[0].toUpperCase(),
+                              style: const TextStyle(fontSize: 40),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // User personal information
+                        Text(
+                          //user.fullName,
+                          '${user.firstName} ${user.lastName}',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // User details card
+                        Card(
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                _buildInfoRow(context, Icons.person,
+                                    'First Name', user.firstName),
+                                const Divider(),
+                                _buildInfoRow(context, Icons.person_outline,
+                                    'Last Name', user.lastName),
+                                const Divider(),
+                                _buildInfoRow(context, Icons.calendar_today,
+                                    'Age', user.age.toString()),
+                                const Divider(),
+                                _buildInfoRow(
+                                    context, Icons.email, 'Email', user.email),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else if (state is UserInfoLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return const Center(child: Text('An error occured'));
+                  }
+                },
               ),
             ),
-            const SizedBox(height: 24),
 
-            // User personal information
-            Text(
-              //user.fullName,
-              '${user.firstName} ${user.lastName}',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 16),
-
-            // User details card
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    _buildInfoRow(
-                        context, Icons.person, 'First Name', user.firstName),
-                    const Divider(),
-                    _buildInfoRow(context, Icons.person_outline, 'Last Name',
-                        user.lastName),
-                    const Divider(),
-                    _buildInfoRow(context, Icons.calendar_today, 'Age',
-                        user.age.toString()),
-                    const Divider(),
-                    _buildInfoRow(context, Icons.email, 'Email', user.email),
-                  ],
-                ),
-              ),
-            ),
-
-            const Spacer(),
+            //const Spacer(),
 
             // Sign Out button
             SizedBox(

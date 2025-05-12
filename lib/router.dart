@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:onboarding_project/cubits/auth_cubit.dart';
 import 'package:onboarding_project/cubits/logs_cubit.dart';
 import 'package:onboarding_project/cubits/products_cubit.dart';
+import 'package:onboarding_project/cubits/user_info_cubit.dart';
 import 'package:onboarding_project/screens/products_screen.dart';
-import 'models/user.dart';
 import 'screens/home_screen.dart';
 import 'screens/log_screen.dart';
 import 'screens/login_screen.dart';
@@ -34,15 +34,9 @@ final router = GoRouter(
     ),
     GoRoute(
         path: '/user-info',
-        builder: (context, state) => UserInfoScreen(
-              user: User(
-                  id: 1,
-                  username: 'emilys',
-                  email: 'emily.johnson@x.dummyjson.com',
-                  firstName: 'Emily',
-                  lastName: 'Johnson',
-                  age: 26,
-                  image: 'https://dummyjson.com/icon/emilys/128'),
+        builder: (context, state) => BlocProvider(
+              create: (context) => UserInfoCubit()..getUserInfo(),
+              child: const UserInfoScreen(),
             )),
   ],
   redirect: (context, state) {
