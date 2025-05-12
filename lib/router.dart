@@ -13,7 +13,16 @@ import 'screens/user_info_screen.dart';
 final router = GoRouter(
   initialLocation: '/products',
   routes: [
-    GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => LoginScreen(),
+      redirect: (context, state) {
+        if (context.read<AuthCubit>().state is AuthAuthenticated) {
+          return '/products';
+        }
+        return null;
+      },
+    ),
     ShellRoute(
       builder: (context, state, child) => HomeScreen(child: child),
       routes: [
@@ -40,15 +49,8 @@ final router = GoRouter(
             )),
   ],
   redirect: (context, state) {
-    final authState = context.read<AuthCubit>().state;
-    final bool isAuthenticated = authState is AuthAuthenticated;
-
-    //TODO: change from top level redirect to login specific redirect function
-    if (state.uri.toString() == '/login' && isAuthenticated) {
-      return '/products';
-    }
-
-    if (state.uri.toString() != '/login' && !isAuthenticated) {
+    if (state.uri.toString() != '/login' &&
+        context.read<AuthCubit>().state is! AuthAuthenticated) {
       return '/login';
     }
 
