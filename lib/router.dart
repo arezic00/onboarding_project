@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:onboarding_project/cubits/auth_cubit.dart';
+import 'package:onboarding_project/cubits/logs_cubit.dart';
 import 'package:onboarding_project/cubits/products_cubit.dart';
 import 'package:onboarding_project/screens/products_screen.dart';
 import 'models/user.dart';
@@ -23,7 +24,12 @@ final router = GoRouter(
             child: const ProductsScreen(),
           ),
         ),
-        GoRoute(path: '/log', builder: (context, state) => const LogScreen()),
+        GoRoute(
+            path: '/log',
+            builder: (context, state) => BlocProvider(
+                  create: (context) => LogsCubit()..getLogs(),
+                  child: const LogScreen(),
+                )),
       ],
     ),
     GoRoute(
