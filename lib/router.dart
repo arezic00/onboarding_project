@@ -42,7 +42,6 @@ final router = GoRouter(
                   firstName: 'Emily',
                   lastName: 'Johnson',
                   age: 26,
-                  address: 'Ante Starčevića 44',
                   image: 'https://dummyjson.com/icon/emilys/128'),
             )),
   ],

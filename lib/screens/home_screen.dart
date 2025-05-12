@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:onboarding_project/cubits/auth_cubit.dart';
 
-import '../models/user.dart';
 import '../widgets/user_avatar.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,34 +18,14 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Home'),
         actions: [
           Padding(
-              padding: const EdgeInsets.only(right: 16.0),
-              child:
-                  //state is AuthAuthenticatedState ?
-                  UserAvatar(
-                user: User(
-                    id: 1,
-                    username: 'emilys',
-                    email: 'emily.johnson@x.dummyjson.com',
-                    firstName: 'Emily',
-                    lastName: 'Johnson',
-                    age: 26,
-                    address: 'Ante Starčevića 44',
-                    image: 'https://dummyjson.com/icon/emilys/128'),
-                onTap: () => context.go('/user-info'),
-              )
-              /*: state is AuthLoadingState
-                        ? SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          )
-                        : SizedBox.shrink(),*/
-              ),
+            padding: const EdgeInsets.only(right: 16.0),
+            child: UserAvatar(
+              image: (context.read<AuthCubit>().state as AuthAuthenticated)
+                  .authData
+                  .userImage,
+              onTap: () => context.go('/user-info'),
+            ),
+          ),
         ],
       ),
       body: child,

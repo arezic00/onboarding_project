@@ -52,4 +52,6 @@ class AuthData {
 
     return currentUtcSeconds > exp - ConfigConstants.tokenExpiryOffset;
   }
+
+  String get userImage => _decodeJwtPayload(accessToken)['image'];
 }

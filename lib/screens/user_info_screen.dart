@@ -64,9 +64,6 @@ class UserInfoScreen extends StatelessWidget {
                         user.age.toString()),
                     const Divider(),
                     _buildInfoRow(context, Icons.email, 'Email', user.email),
-                    const Divider(),
-                    _buildInfoRow(
-                        context, Icons.location_city, 'Address', user.address),
                   ],
                 ),
               ),

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:onboarding_project/models/user.dart';
 
 class UserAvatar extends StatelessWidget {
-  final User user;
+  final String image;
   final VoidCallback onTap;
   final double radius;
 
   const UserAvatar({
     super.key,
-    required this.user,
+    required this.image,
     required this.onTap,
     this.radius = 18,
   });
@@ -22,7 +21,7 @@ class UserAvatar extends StatelessWidget {
         child: CircleAvatar(
             radius: radius,
             backgroundColor: Colors.grey.shade300,
-            backgroundImage: NetworkImage(user.image),
+            backgroundImage: NetworkImage(image),
             child: Icon(Icons.person, size: radius)),
       ),
     );

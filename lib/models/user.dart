@@ -5,7 +5,6 @@ class User {
   final String firstName;
   final String lastName;
   final int age;
-  final String address;
   final String image;
 
   User({
@@ -15,7 +14,6 @@ class User {
     required this.firstName,
     required this.lastName,
     required this.age,
-    required this.address,
     required this.image,
   });
 
@@ -27,7 +25,6 @@ class User {
       firstName: map['firstName'],
       lastName: map['lastname'],
       age: map['age'],
-      address: map['address']['address'],
       image: map['image'],
     );
   }
