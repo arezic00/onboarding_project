@@ -1,4 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:onboarding_project/cubits/base_cubit.dart';
 import 'package:onboarding_project/models/product.dart';
 import 'package:onboarding_project/models/products_response.dart';
 import 'package:onboarding_project/services/product_service.dart';
@@ -26,7 +26,7 @@ class ProductsError extends ProductsState {
   ProductsError(this.message);
 }
 
-class ProductsCubit extends Cubit<ProductsState> {
+class ProductsCubit extends BaseCubit<ProductsState> {
   final ProductService _productService = ProductService();
   ProductsCubit() : super(ProductsInitial());
 
@@ -37,9 +37,9 @@ class ProductsCubit extends Cubit<ProductsState> {
     try {
       final productsResponse = await _productService.getProducts(
           accessToken: accessToken, skip: 0, search: search);
-      emit(ProductsLoaded.fromResponse(productsResponse));
+      safeEmit(ProductsLoaded.fromResponse(productsResponse));
     } catch (e) {
-      emit(ProductsError('$e'));
+      safeEmit(ProductsError('$e'));
     }
   }
 
@@ -51,11 +51,11 @@ class ProductsCubit extends Cubit<ProductsState> {
         final products = loadedState.products;
         final newProductsResponse = await _productService.getProducts(
             accessToken: accessToken, skip: products.length, search: search);
-        emit(ProductsLoaded(
+        safeEmit(ProductsLoaded(
             products: [...products, ...newProductsResponse.products],
             total: newProductsResponse.total));
       } catch (e) {
-        emit(ProductsError('$e'));
+        safeEmit(ProductsError('$e'));
       }
     }
   }

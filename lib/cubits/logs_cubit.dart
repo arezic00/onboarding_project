@@ -1,4 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:onboarding_project/cubits/base_cubit.dart';
 import 'package:onboarding_project/models/log_entry.dart';
 import 'package:onboarding_project/services/log_service.dart';
 
@@ -19,13 +19,13 @@ class LogsError extends LogsState {
   LogsError(this.message);
 }
 
-class LogsCubit extends Cubit<LogsState> {
+class LogsCubit extends BaseCubit<LogsState> {
   final _logService = LogService();
   LogsCubit() : super(LogsInitial());
 
   Future<void> getLogs() async {
     emit(LogsLoading());
     final logs = await _logService.getLogs();
-    if (!isClosed) emit(LogsLoaded(logs: logs));
+    safeEmit(LogsLoaded(logs: logs));
   }
 }
